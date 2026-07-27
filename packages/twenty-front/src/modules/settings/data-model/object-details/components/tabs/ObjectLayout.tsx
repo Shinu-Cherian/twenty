@@ -16,9 +16,12 @@ import { useFindManyRecords } from '@/object-record/hooks/useFindManyRecords';
 import { useResetPageLayoutToDefault } from '@/page-layout/hooks/useResetPageLayoutToDefault';
 import { recordPageLayoutByObjectMetadataIdFamilySelector } from '@/page-layout/states/selectors/recordPageLayoutByObjectMetadataIdFamilySelector';
 import { SettingsCard } from '@/settings/components/SettingsCard';
+import { useHasPermissionFlag } from '@/settings/roles/hooks/useHasPermissionFlag';
 import { ConfirmationModal } from '@/ui/layout/modal/components/ConfirmationModal';
 import { useModal } from '@/ui/layout/modal/hooks/useModal';
 import { useAtomFamilySelectorValue } from '@/ui/utilities/state/jotai/hooks/useAtomFamilySelectorValue';
+
+import { PermissionFlagType } from '~/generated-metadata/graphql';
 import { useNavigateApp } from '~/hooks/useNavigateApp';
 
 const StyledContentContainer = styled.div`
@@ -38,6 +41,7 @@ export const ObjectLayout = ({ objectMetadataItem }: ObjectLayoutProps) => {
   const { t } = useLingui();
   const navigateApp = useNavigateApp();
   const { enterLayoutCustomizationMode } = useEnterLayoutCustomizationMode();
+  const hasLayoutsPermission = useHasPermissionFlag(PermissionFlagType.LAYOUTS);
   const { openModal } = useModal();
   const { resetPageLayoutToDefault } = useResetPageLayoutToDefault();
 
@@ -55,7 +59,7 @@ export const ObjectLayout = ({ objectMetadataItem }: ObjectLayoutProps) => {
   const firstRecord = records[0];
 
   const handleCustomizeRecordPage = () => {
-    if (!isDefined(firstRecord)) {
+    if (!hasLayoutsPermission || !isDefined(firstRecord)) {
       return;
     }
 
@@ -74,7 +78,7 @@ export const ObjectLayout = ({ objectMetadataItem }: ObjectLayoutProps) => {
   };
 
   const handleConfirmReset = async () => {
-    if (!isDefined(pageLayout)) {
+    if (!hasLayoutsPermission || !isDefined(pageLayout)) {
       return;
     }
 

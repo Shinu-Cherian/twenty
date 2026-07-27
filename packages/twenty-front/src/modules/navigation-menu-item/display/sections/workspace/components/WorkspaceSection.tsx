@@ -34,6 +34,8 @@ import { useAtomState } from '@/ui/utilities/state/jotai/hooks/useAtomState';
 import { useAtomStateValue } from '@/ui/utilities/state/jotai/hooks/useAtomStateValue';
 import { useSetAtomState } from '@/ui/utilities/state/jotai/hooks/useSetAtomState';
 import { viewsSelector } from '@/views/states/selectors/viewsSelector';
+
+import { PermissionFlagType } from '~/generated-metadata/graphql';
 import { NavigationMenuItemType, SidePanelPages } from 'twenty-shared/types';
 import { lastVisitedViewPerObjectMetadataItemState } from '@/navigation/states/lastVisitedViewPerObjectMetadataItemState';
 
@@ -52,6 +54,7 @@ export const WorkspaceSection = () => {
     lastVisitedViewPerObjectMetadataItemState,
   );
   const { enterLayoutCustomizationMode } = useEnterLayoutCustomizationMode();
+  const hasLayoutsPermission = useHasPermissionFlag(PermissionFlagType.LAYOUTS);
   const isLayoutCustomizationModeEnabled = useAtomStateValue(
     isLayoutCustomizationModeEnabledState,
   );
@@ -201,14 +204,16 @@ export const WorkspaceSection = () => {
               onClick={handleAddMenuItem}
             />
           ) : (
-            <div onMouseEnter={preloadNavigationMenuItemDndKit}>
-              <LightIconButton
-                Icon={IconTool}
-                accent="tertiary"
-                size="small"
-                onClick={handleEditClick}
-              />
-            </div>
+            hasLayoutsPermission && (
+              <div onMouseEnter={preloadNavigationMenuItemDndKit}>
+                <LightIconButton
+                  Icon={IconTool}
+                  accent="tertiary"
+                  size="small"
+                  onClick={handleEditClick}
+                />
+              </div>
+            )
           )}
         </StyledRightIconsContainer>
       }
